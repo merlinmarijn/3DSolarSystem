@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>29 Solar System 3D</title>
+    <style>
+    body { margin: 0}
+    canvas { display: : block; }
+    </style>
+</head>
+<body>
+    <script src="../../lib/three.js"></script>
+    <script>
+    let scene = new THREE.Scene();
+    let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight,0.1,1000);
+    let renderer = new THREE.WebGLRenderer();
+
+
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    let testGeometry = new THREE.BoxGeometry(1,1,1);
+    let tempMat = new THREE.MeshBasicMaterial({color:0xff0000,wireframe:true});
+    let testMesh = new THREE.Mesh(testGeometry,tempMat);
+
+        //Texture loader
+        let loader = new THREE.TextureLoader();
+
+
+        //Sun model/material/Mesh
+        let sun = new THREE.SphereGeometry(1, 32, 32);
+        let sunMaterial = new THREE.MeshBasicMaterial({
+          map: loader.load('media/Sun.jpg')
+        })
+        let sunMesh = new THREE.Mesh(sun,sunMaterial);
+
+
+        //Earth model/material/mesh
+        let earth = new THREE.SphereGeometry(1, 32, 32);
+        let earthMaterial = new THREE.MeshLambertMaterial({
+          map: loader.load('media/Earth_Day.jpg')
+        })
+        let earthMesh = new THREE.Mesh(earth,earthMaterial);
+        let earthSpherical = new THREE.Spherical(6,Math.PI/2,1)
+
+
+
+        //Moon model/material/mesh
+        let moon = new THREE.SphereGeometry(0.25,32,32);
+        let moonMaterial = new THREE.MeshLambertMaterial({
+          map: loader.load('media/Moon.jpg')
+        })
+        let moonMesh = new THREE.Mesh(moon,moonMaterial);
+        let moonSpherical = new THREE.Spherical(4, Math.PI/2,1)
+
+
+
+        //Directional Light
+        let directionalLight = new THREE.PointLight(0xffffff,1,100);
+
+
+
+        scene.add(sunMesh);
+        scene.add(earthMesh);
+        scene.add(moonMesh);
+        scene.add(directionalLight);
+
+
+
+        camera.position.z = 10;
+        camera.position.y = 6;
+        camera.lookAt(new THREE.Vector3(0,0,0));
+        directionalLight.position.x = 0;
+
+
+        // earthMesh.position.x = 3;
+        earthMesh.position.setFromSpherical(earthSpherical)
+        moonMesh.position.setFromSpherical(moonSpherical)
+        // moonMesh.position.x = earthMesh.position.x + 4;
+
+    function animate(){
+      requestAnimationFrame(animate);
+      renderer.render(scene,camera);
+      sunMesh.rotation.y += 0.01;
+      earthMesh.rotation.y += 0.02;
+      moonMesh.rotation.y += 0.02;
+
+      earthSpherical.theta += 0.01;
+      moonSpherical.theta += 0.01;
+      earthMesh.position.setFromSpherical(earthSpherical)
+      moonMesh.position = earthMesh.position;
+      moonMesh.position.setFromSpherical(moonSpherical)
+    }
+    animate();
+    </script>
+</body>
+</html>
